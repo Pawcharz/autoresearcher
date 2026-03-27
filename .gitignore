@@ -1,7 +1,5 @@
 # Research artifacts — generated during runs, not tracked in git
-experiments/
-experiment_log.md
-findings.md
+runs/
 
 # Research target — symlink or external path for real projects (not part of this repo)
 # Commented out here so the dummy example in research_target/ is tracked.
