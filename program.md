@@ -45,10 +45,42 @@ The experiment must be runnable from the repo root.
 
 Choose the appropriate tier based on what the experiment needs:
 
+**Required: timeout wrapper**
+Every `experiment.py`, regardless of tier, must use this wrapper as its entry point.
+Read `experiment_timeout_seconds` from `config/config.yaml` and use it as the limit.
+
+```python
+import subprocess
+import sys
+
+TIMEOUT_SECONDS = 300  # read from config/config.yaml
+
+def run():
+    # --- experiment logic goes here ---
+    pass
+
+if __name__ == '__main__':
+    if '--inner' in sys.argv:
+        run()
+    else:
+        try:
+            result = subprocess.run(
+                [sys.executable, __file__, '--inner'],
+                timeout=TIMEOUT_SECONDS,
+            )
+            sys.exit(result.returncode)
+        except subprocess.TimeoutExpired:
+            print(f'TIMEOUT: experiment exceeded {TIMEOUT_SECONDS}s', flush=True)
+            sys.exit(124)
+```
+
+All experiment logic lives inside `run()`. The outer block re-launches the script as a
+subprocess and enforces the timeout. Exit code 124 signals a timeout to Step 3.
+
 **Tier 1 — read-only (default)**
 The experiment only imports and calls existing code. Use this whenever possible.
-- File: `experiment.py`
-- `sys.path.insert(0, 'research_target')` at the top if needed.
+- File: `experiment.py` with the timeout wrapper above.
+- `sys.path.insert(0, 'research_target')` inside `run()` if needed.
 - Save all outputs to `outputs/`. Print a short summary to stdout at the end.
 
 **Tier 2 — monkey patching**
@@ -83,11 +115,14 @@ answer the research question.
 ### Step 3 — Run
 Execute the experiment:
 ```
-python experiments/{direction_id}/exp_{NNN}/experiment.py
+python {RUN_DIR}/experiments/{direction_id}/exp_{NNN}/experiment.py
 ```
-If it fails, read the error, fix it, and re-run. Do not move on with a broken experiment.
-If it fails three times with different errors and you cannot diagnose the root cause,
-mark it as blocked in the log and move to the next experiment idea.
+- **Exit code 0**: success — proceed to Step 4.
+- **Exit code 124**: timeout — the experiment exceeded `experiment_timeout_seconds`.
+  Log it as timed out, do not attempt to fix it. Move to the next experiment idea.
+- **Any other non-zero exit code**: failure — read the error, fix it, and re-run.
+  If it fails three times with different errors and you cannot diagnose the root cause,
+  mark it as blocked in the log and move to the next experiment idea.
 
 ### Step 4 — Analyze
 Read all outputs. Form an honest interpretation of the results.
@@ -131,7 +166,7 @@ Append to `experiment_log.md`:
 - **Hypothesis**: [one line]
 - **Result**: [one line — specific, with numbers if applicable]
 - **Score**: [N]/10 — [one-sentence reasoning]
-- **Status**: [continuing | finalized | blocked]
+- **Status**: [continuing | finalized | blocked | timed out]
 - **Next**: [what to try next, or "direction finalized"]
 ```
 

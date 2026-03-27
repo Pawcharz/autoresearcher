@@ -14,3 +14,8 @@ significance_threshold: 7
 
 # Maximum experiments per direction before the direction is considered exhausted.
 max_experiments_per_direction: 15
+
+# Maximum wall-clock seconds a single experiment is allowed to run.
+# The experiment script enforces this itself via a subprocess wrapper.
+# Increase for long-running training jobs; decrease for fast analysis experiments.
+experiment_timeout_seconds: 300
