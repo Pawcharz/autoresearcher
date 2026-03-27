@@ -1,0 +1,16 @@
+# Autoresearcher configuration
+
+# Path to the research codebase. Can be relative or absolute.
+# Use a symlink in research_target/ or set an absolute path here.
+research_target_path: research_target/
+
+# Whether Claude is allowed to modify files in research_target/.
+# Set to true only if you want experiments to patch the codebase in place.
+allow_research_target_writes: false
+
+# Minimum score threshold for a finding to be considered "significant".
+# Experiments at or above this score should be replicated before finalizing.
+significance_threshold: 7
+
+# Maximum experiments per direction before the direction is considered exhausted.
+max_experiments_per_direction: 15

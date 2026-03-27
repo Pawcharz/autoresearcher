@@ -1,0 +1,43 @@
+# Research directions for the dummy synthetic classifier example.
+# Replace these with your own directions when using on a real codebase.
+
+directions:
+
+  - id: linear_separability
+    title: "Linear separability of hidden layer representations"
+    question: >
+      Do the hidden layer activations form linearly separable representations of the two
+      classes? Is linear separability better in layer 1 or layer 2? Does it improve
+      progressively through the network?
+    context: >
+      The model is a 2-layer MLP (16 -> 8 hidden units, ReLU) trained on 2D synthetic data
+      with make_classification (class_sep=0.8, 2 clusters per class). Saved activations
+      are in research_target/artifacts/: test_layer1.npy and test_layer2.npy (shape:
+      n_samples x n_neurons). Labels are in y_test.npy. Use utils.py to load everything.
+      A simple logistic regression probe is the standard approach for linear separability.
+    done: false
+
+  - id: neuron_importance
+    title: "Individual neuron importance for classification"
+    question: >
+      Which neurons in the hidden layers contribute most to correct classification?
+      Is neuron importance concentrated in a few neurons (sparse) or distributed broadly?
+      Are the most important neurons in layer 1 or layer 2?
+    context: >
+      Use the saved model (model.pkl) and activations via utils.py. Importance can be
+      measured by ablation (zero out one neuron at a time, measure accuracy drop) or by
+      weight magnitude. Both approaches are valid — try ablation first as it is more
+      directly causal. Layer 1 has 16 neurons, layer 2 has 8 neurons.
+    done: false
+
+  - id: decision_boundary
+    title: "Input-space structure of the decision boundary"
+    question: >
+      What does the decision boundary look like in the original 2D input space?
+      Are there regions of high model confidence vs. low confidence? Do the two
+      clusters per class create a non-contiguous decision boundary?
+    context: >
+      The input is 2D (X_test.npy has shape n_samples x 2), which makes it possible
+      to visualize the full input space. Use a grid of points, get model probabilities
+      for each, and plot the confidence landscape. Save the plot to outputs/.
+    done: false
