@@ -1,107 +1,141 @@
-# Autoresearcher
+# autoresearcher
 
-A framework for autonomous overnight experiment execution on ML research codebases.
-Works with Claude Code, Cursor, and Codex — no API credits required.
+experiment progression
 
-The user opens their AI coding tool, says "Read program.md and begin", and leaves it
-running. The orchestrator spawns one worker subagent per research direction (in parallel
-where supported, sequentially otherwise), each running in its own fresh context window.
-Results are consolidated into a findings report at the end.
+A framework for autonomous experiment execution on ML research codebases. Define research directions, point it at your code, and let it run. Workers explore the codebase, write and execute experiments, self-score results against your rubric, and iterate until they find something significant. Output: a findings report with quantified results, counterarguments, and prioritized follow-ups.
+
+Works with Claude Code, Cursor, and Codex — any subscription, zero extra cost.
 
 ---
 
-## How to use
+## How it works
 
-**1. Point it at your research codebase**
+architecture diagram
 
-Symlink your codebase into `research_target/`:
+You define research directions — specific, falsifiable questions about your codebase. autoresearcher spawns one worker agent per direction. Each worker explores the code, writes and runs experiments, self-scores results against a rubric you provide, and keeps iterating until a finding clears the significance threshold or the experiment budget runs out. Everything is coordinated through plain markdown files. No Python orchestrator, no API calls — the markdown files *are* the program.
+
+### Papers pipeline
+
+Drop PDFs into `papers/raw/`, run `Read papers/ingest.md and begin`, and each paper gets distilled into three tiers that workers reference during experiments — from a one-liner index loaded at startup, to a condensed full-text loaded when directly relevant.
+
+papers pipeline
+
+---
+
+## Example output
+
+> **Does accuracy become misleading under class imbalance?**
+>
+> **Key finding:** Accuracy becomes misleading at ratio 5:1, where model accuracy (82.67%) converges with the majority-class baseline (83%). At ratio 10:1, F1 collapses below 0.1 while accuracy remains above 90% — complete decoupling between accuracy and minority-class detection.
+>
+> **Actionable insight:** Switch to AUC or threshold-optimized F1 above ratio 5:1. For ratios 10–20, threshold tuning recovers F1 (6.6× gain at ratio 10) but always trades accuracy. Above 50:1, threshold tuning alone is insufficient (max F1 < 0.15).
+>
+> Score: 8/10  ·  exp_001 replicated by exp_002
+
+> **Can threshold tuning recover performance at high imbalance?**
+>
+> **Key finding:** At ratio 20:1, lowering threshold 0.5 → 0.10 recovers F1 from 0 to 0.31. Optimal threshold correlates with minority fraction (r=0.71) but ultimately depends on probability distribution overlap — at 100:1, distributions overlap so heavily that no threshold recovers F1 above 0.04.
+>
+> Score: 8/10  ·  exp_001 replicated by exp_004
+
+*Example output from the included demo. Your run produces* `runs/{timestamp}/findings.md`*.*
+
+---
+
+## Try it in 5 minutes
+
 ```bash
-ln -s /path/to/your/codebase research_target
+git clone https://github.com/YOUR_USERNAME/autoresearcher
+cd autoresearcher
+pip install numpy scikit-learn matplotlib
+python research_target/train.py      # precompute demo artifacts (~2 sec)
 ```
-Or set `research_target_path` in `config/config.yaml` to an absolute path.
 
-**2. Define your research directions**
+Open Claude Code (or Cursor, or Codex) in this directory and say:
 
-Edit `config/directions.yaml`. Each direction is a focused research question.
-Workers run in parallel — one worker per direction.
-
-**3. Define your scoring rubric**
-
-Edit `config/scoring_rubric.md` to describe what a publishable finding looks like
-for your paper and target venue.
-
-**4. (Optional) Add papers**
-
-Drop PDFs into `papers/raw/`, then run a separate ingestion session:
-```
-Read papers/ingest.md and begin.
-```
-The ingestion session builds a searchable paper database workers can reference when
-designing experiments.
-
-**5. Open Claude Code (or Cursor, or Codex) and say:**
 ```
 Read program.md and begin.
 ```
 
-Leave it running. Workers explore the codebase, write and run experiments, score
-findings, and log results. When all directions are done, the orchestrator writes
-`runs/{timestamp}/findings.md`.
+The demo has 3 research directions exploring class imbalance — a problem with a known answer, so you can judge whether the agent's findings are correct.
 
 ---
 
-## Directory structure
+## Use it on your own research
+
+**1. Point it at your codebase**
+
+```bash
+ln -s /path/to/your/codebase research_target
+# or set research_target_path in config/config.yaml
+```
+
+**2. Define research directions** — `config/directions.yaml`
+
+```yaml
+directions:
+  - id: my_direction
+    title: "Does X cause Y?"
+    question: >
+      Specific, falsifiable question. What would a positive result look like?
+    context: >
+      What data exists. Which functions to call. Known baselines to beat.
+```
+
+**3. Set your scoring rubric** — `config/scoring_rubric.md`
+
+Describe what a publishable finding looks like for your paper and venue. Workers use this to self-score every experiment and decide when to stop.
+
+**4. (Optional) Add papers** — drop PDFs into `papers/raw/`, then:
 
 ```
-autoresearcher/
-├── program.md               ← entry point; read this to begin (orchestrator)
-├── worker.md                ← worker instructions; spawned per direction
-├── config/
-│   ├── config.yaml          ← research target path, timeout, thresholds
-│   ├── directions.yaml      ← research directions (one worker per direction)
-│   └── scoring_rubric.md    ← what "interesting" means for your paper
-├── papers/
-│   ├── ingest.md            ← ingestion entry point (orchestrator)
-│   ├── ingest_worker.md     ← per-paper worker; spawned by ingest.md
-│   ├── index.md             ← one-liner per paper; loaded by workers at startup
-│   ├── raw/                 ← original PDFs (gitignored)
-│   ├── overview/            ← short structured overview per paper (gitignored)
-│   └── condensed/           ← ~10-20% length distillation per paper (gitignored)
-├── research_target/         ← symlink to your codebase (gitignored)
-└── runs/                    ← auto-created; one subdir per session (gitignored)
-    └── YYYYMMDD_HHMMSS/
-        ├── experiment_log_{direction_id}.md
-        ├── findings.md
-        └── experiments/
-            └── {direction_id}/
-                └── exp_001/
-                    ├── experiment.py
-                    ├── outputs/
-                    └── summary.md
+Read papers/ingest.md and begin.
+```
+
+Workers reference the paper database when designing experiments.
+
+**5. Run experimentation pipeline**
+
+```
+In new session: "Read program.md and begin."
 ```
 
 ---
 
-## Design principles
+## Design notes
 
-**No API credits.** Uses the built-in tools of Claude Code, Cursor, or Codex — works
-with any subscription. No `anthropic.Anthropic()` calls, no separate billing.
+**No API credits.** The markdown files drive the built-in tool loop of your coding assistant. No `anthropic.Anthropic()`, no separate billing.
 
-**Parallel workers, isolated context.** Each research direction runs in its own subagent
-with a fresh context window. No quadratic context growth across directions.
+**Isolated context per direction.** Each worker runs in a fresh context window. Parallel directions don't share context or inflate each other's cost.
 
-**Filesystem coordination.** Workers write to their own `experiments/{direction_id}/`
-subdirectory. No shared state, no write conflicts. The orchestrator reads results after
-workers finish.
+**Mandatory skepticism.** Every experiment requires a counterargument section before a score is assigned. The worker argues against its own findings — generic objections are rejected by the rubric.
 
-**Compact memory.** Each worker maintains a compact `experiment_log_{direction_id}.md`
-(~100–200 tokens per entry, rolling 10-entry window) instead of relying on full
-conversation history.
+**Safe by default.** Experiments are tiered: read-only (default) → runtime monkey-patching → file copies in `patches/`. `research_target/` is never modified unless you allow it in config.
 
-**Mandatory skepticism.** Every experiment summary requires a counterargument section
-where the worker argues against its own findings before assigning a score.
+**Paper-agnostic.** All domain knowledge lives in `config/` and `papers/`. Clone and reconfigure for a different project.
 
-**Paper-agnostic core.** All paper-specific knowledge lives in `config/` and `papers/`.
-Clone and reconfigure to use on a different research project.
+---
 
-**1:1 mapping.** One repo instance = one research codebase = one config.
+## Compatibility
+
+
+| Tool        | Parallel workers | Method                  |
+| ----------- | ---------------- | ----------------------- |
+| Claude Code | ✓                | Agent Teams / Task tool |
+| Cursor      | ✓                | Background agents       |
+| Codex       | ✓                | Explicit spawning       |
+
+
+Works on Linux, macOS, and Windows. Project-scoped command allowlists included for all three tools (`.claude/settings.json`, `.cursor/cli.json`, `.codex/rules/default.rules`).
+
+---
+
+## Inspiration
+
+Andrej Karpathy's [autoresearch](https://github.com/karpathy/autoresearch) demonstrated the idea of running an AI coding tool autonomously on a research codebase. autoresearcher extends this to multi-direction parallel research on any codebase, with structured output and no additional API costs.
+
+---
+
+## License
+
+MIT
