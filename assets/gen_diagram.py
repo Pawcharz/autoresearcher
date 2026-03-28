@@ -28,7 +28,7 @@ def rect(x, y, w, h, fill, stroke, sw=1.6, rx=12, opacity=1.0):
 
 def arr(x1, y1, x2, y2, col="#aaaaaa"):
     return (f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
-            f'stroke="{col}" stroke-width="1.4" marker-end="url(#arr)"/>')
+            f'stroke="{col}" stroke-width="2.2" marker-end="url(#arr)"/>')
 
 def txt(x, y, s, size=13, fill="#333333", bold=False, italic=False, anchor="middle"):
     fw = "bold" if bold else "normal"
@@ -40,9 +40,9 @@ def txt(x, y, s, size=13, fill="#333333", bold=False, italic=False, anchor="midd
 out = [
     f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}">',
     '<defs>',
-    '  <marker id="arr" markerWidth="9" markerHeight="7" refX="9" refY="3.5"'
+    '  <marker id="arr" markerWidth="14" markerHeight="10" refX="13" refY="5"'
     ' orient="auto" markerUnits="userSpaceOnUse">',
-    '    <path d="M0,0.5 L9,3.5 L0,6.5 Z" fill="#aaaaaa"/>',
+    '    <path d="M0,1 L13,5 L0,9 Z" fill="#aaaaaa"/>',
     '  </marker>',
     '</defs>',
     f'<rect width="{W}" height="{H}" fill="white"/>',
@@ -50,10 +50,10 @@ out = [
 
 # ── "you" box ────────────────────────────────────────────────────────────────
 out += [
-    rect(20, mid_y - 60, 162, 120, "#f7f7f7", "#cccccc"),
-    txt(101, mid_y - 22, "you", size=15, fill="#444444", bold=True),
-    txt(101, mid_y + 5,  '\u201cRead program.md', size=10, fill="#888888", italic=True),
-    txt(101, mid_y + 22, 'and begin\u201d',        size=10, fill="#888888", italic=True),
+    rect(20, mid_y - 60, 162, 120, "#f7f7f7", "#cccccc", sw=2.2),
+    txt(101, mid_y - 22, "you", size=24, fill="#444444", bold=True),
+    txt(101, mid_y + 8,  '\u201cRead program.md', size=16, fill="#888888", italic=True),
+    txt(101, mid_y + 28, 'and begin\u201d',        size=16, fill="#888888", italic=True),
 ]
 
 # ── arrow you → program.md ───────────────────────────────────────────────────
@@ -61,11 +61,11 @@ out.append(arr(182, mid_y, 252, mid_y))
 
 # ── program.md box ───────────────────────────────────────────────────────────
 out += [
-    rect(252, mid_y - 95, 216, 190, "#f7f7f7", "#aaaaaa"),
-    txt(360, mid_y - 50, "program.md", size=14, fill="#333333", bold=True),
-    txt(360, mid_y - 27, "orchestrator", size=11, fill="#999999", italic=True),
-    txt(360, mid_y +  2, "spawns one worker", size=10, fill="#aaaaaa"),
-    txt(360, mid_y + 20, "per direction",     size=10, fill="#aaaaaa"),
+    rect(252, mid_y - 95, 216, 190, "#f7f7f7", "#aaaaaa", sw=2.2),
+    txt(360, mid_y - 50, "program.md",        size=22, fill="#333333", bold=True),
+    txt(360, mid_y - 24, "orchestrator",       size=17, fill="#999999", italic=True),
+    txt(360, mid_y +  4, "spawns one worker",  size=16, fill="#aaaaaa"),
+    txt(360, mid_y + 24, "per direction",      size=16, fill="#aaaaaa"),
 ]
 
 # ── arrows program.md → workers ──────────────────────────────────────────────
@@ -77,10 +77,10 @@ for t, cy, col, (line1, line2), exp in zip(w_tops, w_centers, DIR_COLORS, DIR_TI
     wx = WX + WW // 2
     out += [
         rect(WX, t, WW, WH, col, col, sw=0, opacity=0.10),
-        rect(WX, t, WW, WH, "none", col, sw=1.8),
-        txt(wx, cy - 22, line1, size=11, fill=col, bold=True),
-        txt(wx, cy -  2, line2, size=11, fill=col, bold=True),
-        txt(wx, cy + 24, exp,   size=10, fill="#777777"),
+        rect(WX, t, WW, WH, "none", col, sw=2.5),
+        txt(wx, cy - 24, line1, size=18, fill=col, bold=True),
+        txt(wx, cy -  2, line2, size=18, fill=col, bold=True),
+        txt(wx, cy + 28, exp,   size=16, fill="#777777"),
     ]
 
 # ── arrows workers → findings.md ─────────────────────────────────────────────
@@ -91,11 +91,11 @@ for cy in w_centers:
 # ── findings.md box ──────────────────────────────────────────────────────────
 fcx = FX + 118
 out += [
-    rect(FX, mid_y - 95, 236, 190, "#f7f7f7", "#aaaaaa"),
-    txt(fcx, mid_y - 50, "findings.md",           size=14, fill="#333333", bold=True),
-    txt(fcx, mid_y - 18, "quantified results",    size=10, fill="#999999"),
-    txt(fcx, mid_y +  2, "counterarguments",      size=10, fill="#999999"),
-    txt(fcx, mid_y + 22, "prioritised follow-ups",size=10, fill="#999999"),
+    rect(FX, mid_y - 95, 236, 190, "#f7f7f7", "#aaaaaa", sw=2.2),
+    txt(fcx, mid_y - 50, "findings.md",            size=22, fill="#333333", bold=True),
+    txt(fcx, mid_y - 20, "quantified results",     size=16, fill="#999999"),
+    txt(fcx, mid_y +  2, "counterarguments",       size=16, fill="#999999"),
+    txt(fcx, mid_y + 24, "prioritised follow-ups", size=16, fill="#999999"),
 ]
 
 out.append('</svg>')

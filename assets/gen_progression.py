@@ -45,8 +45,8 @@ for i, (ax, d) in enumerate(zip(axes, DIRECTIONS)):
     # ── threshold band & line ─────────────────────────────────────────────────
     ax.axhspan(THRESHOLD, 10.8, color="#2ecc71", alpha=0.08, zorder=0)
     ax.axhline(THRESHOLD, color="#ccc", linestyle="--", linewidth=1.1, zorder=1)
-    ax.text(0.42, THRESHOLD + 0.2, "significance threshold",
-            fontsize=7, color="#bbb", va="bottom")
+    ax.text(0.30, THRESHOLD - 0.35, "significance threshold",
+            fontsize=7, color="#888", va="top")
 
     # ── fill under curve ─────────────────────────────────────────────────────
     ax.fill_between(xs, scores, 3.0, color=color, alpha=0.08, zorder=2)
@@ -69,7 +69,7 @@ for i, (ax, d) in enumerate(zip(axes, DIRECTIONS)):
             fontsize=8, color=color, va="center", ha="left", fontweight="semibold")
 
     # ── axes styling ──────────────────────────────────────────────────────────
-    ax.set_xlim(0.35, N_COLS + 1.0)
+    ax.set_xlim(0.2, N_COLS + 1.0)
     ax.set_ylim(3.0, 10.8)
     ax.set_yticks([4, 6, 8, 10])
     ax.tick_params(axis="y", labelsize=8, colors="#aaa", length=2, pad=3)
