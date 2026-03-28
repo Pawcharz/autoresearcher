@@ -1,35 +1,33 @@
-# Scoring Rubric — Dummy Synthetic Classifier
+# Scoring Rubric — Class Imbalance Demo
 
-This is an example rubric for testing the autoresearcher framework on the dummy codebase.
-Replace with your own rubric when using on a real research project.
+Calibrates self-scores for experiments on the class imbalance research target.
+Replace with your own rubric when using autoresearcher on a real project.
 
 ---
 
-## What counts as a high-scoring finding (7–10)
+## High (7–10)
 
-- A result that cleanly answers the direction's core question with a clear quantitative
-  result (e.g. "layer 2 achieves 94% probe accuracy vs. 71% for layer 1").
-- A finding that is surprising given the model architecture or training setup.
-- A result that holds up under at least one sanity check or cross-validation
-  (e.g. consistent across train and test splits, or across two measurement methods).
+- A finding that pinpoints a specific transition: e.g. "accuracy diverges from AUC
+  at ratio 10:1 — model accuracy (90%) matches baseline (91%) while AUC is still 0.83".
+- A result that contradicts a common assumption with numbers, e.g. "F1 drops to 0
+  at ratio 20:1 while AUC stays above 0.8 — they are not interchangeable".
+- A threshold-tuning result showing a specific optimal threshold and the F1 gain
+  it produces vs the default 0.5 threshold (e.g. "threshold 0.15 recovers F1 from
+  0.00 to 0.41 at ratio 20:1").
+- A finding that holds consistently across multiple ratios tested in the same experiment.
 
-## What counts as a medium finding (5–6)
+## Medium (5–6)
 
-- A result that is directionally correct but noisy or borderline
-  (e.g. small differences between layers that might not generalize).
-- A visualization that is informative but doesn't resolve the research question.
-- A finding that raises more questions than it answers.
+- A directional result without precise quantification, e.g. "lower threshold improves
+  recall but we only tested two ratios".
+- A correct visualization of metric trajectories that makes divergence visible but
+  doesn't identify the specific crossover point.
+- A correlation analysis that ranks metrics by imbalance-robustness without testing
+  whether the ranking is stable.
 
-## What counts as a low finding (1–4)
+## Low (1–4)
 
-- A null result with no clear interpretation.
+- A result that only restates what summary.json already shows without analysis or
+  interpretation (e.g. "accuracy increases with imbalance ratio").
+- A null result with no hypothesis for why.
 - An experiment that fails to run or produces uninterpretable output.
-- A result that merely confirms the obvious (e.g. "the model learns something").
-
----
-
-## Venue standard (for the dummy)
-
-This is a toy experiment — there is no venue. Score relative to how well the experiment
-answers its specific direction's question. A score of 7 means: if this were a real paper,
-this result would belong in it.

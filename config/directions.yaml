@@ -1,43 +1,52 @@
-# Research directions for the dummy synthetic classifier example.
-# Replace these with your own directions when using on a real codebase.
+# Research directions for the class imbalance dummy example.
+# Replace with your own directions when using on a real codebase.
 
 directions:
 
-  - id: linear_separability
-    title: "Linear separability of hidden layer representations"
+  - id: metric_divergence
+    title: "At what imbalance ratio does accuracy become misleading?"
     question: >
-      Do the hidden layer activations form linearly separable representations of the two
-      classes? Is linear separability better in layer 1 or layer 2? Does it improve
-      progressively through the network?
+      Accuracy climbs toward 99% as imbalance grows, but is this a real improvement
+      or just the model learning to predict the majority class? At which ratio does
+      accuracy diverge sharply from AUC, F1, and MCC? Is there a clear threshold,
+      or is it a gradual drift?
     context: >
-      The model is a 2-layer MLP (16 -> 8 hidden units, ReLU) trained on 2D synthetic data
-      with make_classification (class_sep=0.8, 2 clusters per class). Saved activations
-      are in research_target/artifacts/: test_layer1.npy and test_layer2.npy (shape:
-      n_samples x n_neurons). Labels are in y_test.npy. Use utils.py to load everything.
-      A simple logistic regression probe is the standard approach for linear separability.
+      Use utils.load_summary() to get per-ratio metrics for both the model and the
+      majority-class baseline. Compare model accuracy vs baseline accuracy — when
+      they converge, accuracy is no longer informative. Look at the gap between
+      model accuracy and model AUC/F1/MCC across all 7 ratios (1 to 100). Compute
+      at which ratio the model's F1 first drops below 0.1, and at which ratio
+      model accuracy first exceeds baseline accuracy by less than 5pp. numpy and
+      matplotlib only, save plots to outputs/.
     done: false
 
-  - id: neuron_importance
-    title: "Individual neuron importance for classification"
+  - id: metric_comparison
+    title: "Which metrics track each other? Is F1 a reliable proxy for AUC?"
     question: >
-      Which neurons in the hidden layers contribute most to correct classification?
-      Is neuron importance concentrated in a few neurons (sparse) or distributed broadly?
-      Are the most important neurons in layer 1 or layer 2?
+      AUC and F1 both claim to be imbalance-robust, but they measure different
+      things (ranking vs threshold-based). Do they agree across all 7 ratios, or
+      do they diverge at high imbalance? Is MCC a better proxy for AUC than F1?
+      Which single metric best tracks overall model quality as imbalance grows?
     context: >
-      Use the saved model (model.pkl) and activations via utils.py. Importance can be
-      measured by ablation (zero out one neuron at a time, measure accuracy drop) or by
-      weight magnitude. Both approaches are valid — try ablation first as it is more
-      directly causal. Layer 1 has 16 neurons, layer 2 has 8 neurons.
+      Use utils.load_summary() for the summary table. Compute pairwise correlations
+      (across the 7 ratios) between model AUC, F1, MCC, precision, and recall.
+      Plot each metric's trajectory from ratio 1:1 to 100:1. Use utils.load_ratio()
+      for threshold-level analysis if needed (y_test, y_pred, y_prob available).
+      Check whether F1 and AUC agree on which direction the model is improving or
+      degrading at each step.
     done: false
 
-  - id: decision_boundary
-    title: "Input-space structure of the decision boundary"
+  - id: threshold_tuning
+    title: "Can adjusting the decision threshold recover performance at high imbalance?"
     question: >
-      What does the decision boundary look like in the original 2D input space?
-      Are there regions of high model confidence vs. low confidence? Do the two
-      clusters per class create a non-contiguous decision boundary?
+      At ratio 20:1 and 50:1 the model predicts almost all samples as majority class
+      (F1 ≈ 0), but AUC is still above 0.7 — meaning the ranking is better than
+      random. Can lowering the classification threshold (below 0.5) recover F1 and
+      recall without destroying precision? What threshold maximises F1 at each ratio?
     context: >
-      The input is 2D (X_test.npy has shape n_samples x 2), which makes it possible
-      to visualize the full input space. Use a grid of points, get model probabilities
-      for each, and plot the confidence landscape. Save the plot to outputs/.
+      Use utils.load_ratio(ratio) to get y_test and y_prob for ratios 5, 10, 20, 50,
+      100. From research_target/model.py use predict_at_threshold(proba, threshold).
+      Sweep thresholds from 0.05 to 0.5 in steps of 0.05. For each ratio, find the
+      threshold that maximises F1. Plot F1, precision, recall vs threshold for at
+      least two ratios. Does optimal threshold scale with minority fraction?
     done: false

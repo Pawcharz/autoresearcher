@@ -13,7 +13,7 @@ allow_research_target_writes: false
 significance_threshold: 7
 
 # Maximum experiments per direction before the direction is considered exhausted.
-max_experiments_per_direction: 15
+max_experiments_per_direction: 5
 
 # Maximum wall-clock seconds a single experiment is allowed to run.
 # The experiment script enforces this itself via a subprocess wrapper.

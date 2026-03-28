@@ -1,54 +1,49 @@
 """
-Shared utilities for loading model artifacts.
+Utilities for loading artifacts in experiments.
 
-Usage in experiments:
+Usage:
     import sys
     sys.path.insert(0, 'research_target')
-    from utils import load_model, load_data, load_activations
+    from utils import load_summary, load_ratio, RATIOS
 """
 
+import json
 import os
 import pickle
+import sys
+
 import numpy as np
 
-ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "artifacts")
+sys.path.insert(0, os.path.dirname(__file__))
+
+ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), 'artifacts')
+RATIOS = [1, 2, 5, 10, 20, 50, 100]
 
 
-def load_model():
-    path = os.path.join(ARTIFACTS_DIR, "model.pkl")
+def load_summary() -> list[dict]:
+    """Load summary.json — list of per-ratio dicts with all metrics.
+    Each entry: {ratio, minority_pct, model: {accuracy, f1, auc, ...},
+                 baseline: {accuracy, f1, auc, ...}}"""
+    path = os.path.join(ARTIFACTS_DIR, 'summary.json')
     if not os.path.exists(path):
         raise FileNotFoundError(
-            "Model not found. Run `python research_target/train.py` first."
+            'Artifacts not found. Run `python research_target/train.py` first.'
         )
-    with open(path, "rb") as f:
-        return pickle.load(f)
+    with open(path) as f:
+        return json.load(f)
 
 
-def load_data(split="test"):
-    """Load X and y for 'train' or 'test' split."""
-    X = np.load(os.path.join(ARTIFACTS_DIR, f"X_{split}.npy"))
-    y = np.load(os.path.join(ARTIFACTS_DIR, f"y_{split}.npy"))
-    return X, y
-
-
-def load_activations(layer, split="test"):
-    """
-    Load saved activations.
-    layer: 1 or 2
-    split: 'train' or 'test'
-    Returns array of shape (n_samples, n_neurons)
-    """
-    path = os.path.join(ARTIFACTS_DIR, f"{split}_layer{layer}.npy")
-    return np.load(path)
-
-
-def extract_activations_live(model, X):
-    """Re-extract activations from a model on arbitrary input X."""
-    activations = {}
-    layer_input = X
-    for i, (weights, biases) in enumerate(zip(model.coefs_[:-1], model.intercepts_[:-1])):
-        pre_activation = layer_input @ weights + biases
-        layer_output = np.maximum(0, pre_activation)
-        activations[f"layer_{i+1}"] = layer_output
-        layer_input = layer_output
-    return activations
+def load_ratio(ratio: int) -> dict:
+    """Load per-ratio arrays for threshold and detailed analysis.
+    Returns: {y_test, y_pred, y_prob, model (LogisticRegression)}"""
+    ratio_dir = os.path.join(ARTIFACTS_DIR, f'ratio_{ratio:03d}')
+    if not os.path.exists(ratio_dir):
+        raise FileNotFoundError(f'No artifacts for ratio {ratio}. Run train.py first.')
+    with open(os.path.join(ratio_dir, 'model.pkl'), 'rb') as f:
+        clf = pickle.load(f)
+    return {
+        'y_test': np.load(os.path.join(ratio_dir, 'y_test.npy')),
+        'y_pred': np.load(os.path.join(ratio_dir, 'y_pred.npy')),
+        'y_prob': np.load(os.path.join(ratio_dir, 'y_prob.npy')),
+        'model':  clf,
+    }
