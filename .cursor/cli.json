@@ -1,0 +1,69 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(python *)",
+      "Shell(python3 *)",
+      "Shell(python)",
+      "Shell(py *)",
+
+      "Shell(ls *)",
+      "Shell(ls)",
+      "Shell(pwd)",
+      "Shell(tree *)",
+      "Shell(tree)",
+      "Shell(stat *)",
+      "Shell(dir *)",
+      "Shell(dir)",
+
+      "Shell(cat *)",
+      "Shell(tail *)",
+      "Shell(head *)",
+      "Shell(wc *)",
+      "Shell(diff *)",
+      "Shell(echo *)",
+      "Shell(type *)",
+
+      "Shell(grep *)",
+      "Shell(find *)",
+      "Shell(sort *)",
+      "Shell(sort)",
+      "Shell(uniq *)",
+      "Shell(cut *)",
+      "Shell(awk *)",
+      "Shell(sed *)",
+      "Shell(xargs *)",
+      "Shell(jq *)",
+      "Shell(findstr *)",
+      "Shell(Select-String *)",
+
+      "Shell(which *)",
+      "Shell(where *)",
+      "Shell(date)",
+      "Shell(date *)",
+      "Shell(Get-Date)",
+      "Shell(env)",
+      "Shell(uname *)",
+      "Shell(systeminfo)",
+
+      "Shell(pip list)",
+      "Shell(pip list *)",
+      "Shell(pip show *)",
+      "Shell(pip freeze)",
+
+      "Shell(mkdir *)",
+      "Shell(cp *)",
+      "Shell(touch *)",
+      "Shell(copy *)",
+      "Shell(xcopy *)",
+      "Shell(New-Item *)",
+
+      "Shell(git status)",
+      "Shell(git status *)",
+      "Shell(git log *)",
+      "Shell(git diff *)",
+      "Shell(git show *)",
+      "Shell(git branch *)",
+      "Shell(git remote *)"
+    ]
+  }
+}

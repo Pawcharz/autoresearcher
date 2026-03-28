@@ -1,0 +1,68 @@
+# Autoresearcher project allowlist.
+# Commands the agent may run without prompting — all are read-only or safely scoped.
+# Destructive commands (rm, mv, git commit/push, pip install) are intentionally omitted.
+# Includes equivalents for Unix (Linux/Mac) and Windows (CMD/PowerShell).
+
+# --- Python execution ---
+prefix_rule(pattern=["python"], decision="allow", justification="Run experiment scripts")
+prefix_rule(pattern=["python3"], decision="allow", justification="Run experiment scripts (Unix)")
+prefix_rule(pattern=["py"], decision="allow", justification="Run experiment scripts (Windows launcher)")
+
+# --- Directory listing ---
+prefix_rule(pattern=["ls"], decision="allow", justification="List directory (Unix)")
+prefix_rule(pattern=["pwd"], decision="allow", justification="Print working directory (Unix)")
+prefix_rule(pattern=["dir"], decision="allow", justification="List directory (Windows CMD)")
+prefix_rule(pattern=["tree"], decision="allow", justification="Show directory tree")
+prefix_rule(pattern=["stat"], decision="allow", justification="Show file metadata (Unix)")
+
+# --- File reading ---
+prefix_rule(pattern=["cat"], decision="allow", justification="Read file contents (Unix)")
+prefix_rule(pattern=["tail"], decision="allow", justification="Read end of files (Unix)")
+prefix_rule(pattern=["head"], decision="allow", justification="Read start of files (Unix)")
+prefix_rule(pattern=["type"], decision="allow", justification="Read file contents (Windows CMD)")
+prefix_rule(pattern=["wc"], decision="allow", justification="Count lines/words in files (Unix)")
+prefix_rule(pattern=["diff"], decision="allow", justification="Compare files")
+prefix_rule(pattern=["echo"], decision="allow", justification="Print strings")
+
+# --- Search and text processing ---
+prefix_rule(pattern=["grep"], decision="allow", justification="Search file contents (Unix)")
+prefix_rule(pattern=["findstr"], decision="allow", justification="Search file contents (Windows CMD)")
+prefix_rule(pattern=["Select-String"], decision="allow", justification="Search file contents (PowerShell)")
+prefix_rule(pattern=["find"], decision="allow", justification="Find files by pattern (Unix)")
+prefix_rule(pattern=["sort"], decision="allow", justification="Sort output")
+prefix_rule(pattern=["uniq"], decision="allow", justification="Deduplicate lines (Unix)")
+prefix_rule(pattern=["cut"], decision="allow", justification="Extract columns from text (Unix)")
+prefix_rule(pattern=["awk"], decision="allow", justification="Text processing (Unix)")
+prefix_rule(pattern=["sed"], decision="allow", justification="Stream text editing (Unix)")
+prefix_rule(pattern=["xargs"], decision="allow", justification="Build commands from stdin (Unix)")
+prefix_rule(pattern=["jq"], decision="allow", justification="Parse and query JSON")
+
+# --- System info (read-only) ---
+prefix_rule(pattern=["which"], decision="allow", justification="Check if binary exists (Unix)")
+prefix_rule(pattern=["where"], decision="allow", justification="Check if binary exists (Windows CMD)")
+prefix_rule(pattern=["date"], decision="allow", justification="Get current date/time (Unix)")
+prefix_rule(pattern=["Get-Date"], decision="allow", justification="Get current date/time (PowerShell)")
+prefix_rule(pattern=["env"], decision="allow", justification="Inspect environment variables (Unix)")
+prefix_rule(pattern=["uname"], decision="allow", justification="Get system info (Unix)")
+prefix_rule(pattern=["systeminfo"], decision="allow", justification="Get system info (Windows)")
+
+# --- Pip inspection (read-only) ---
+prefix_rule(pattern=["pip", "list"], decision="allow", justification="List installed packages")
+prefix_rule(pattern=["pip", "show"], decision="allow", justification="Show package metadata")
+prefix_rule(pattern=["pip", "freeze"], decision="allow", justification="Export package list")
+
+# --- Safe file operations ---
+prefix_rule(pattern=["mkdir"], decision="allow", justification="Create experiment directories")
+prefix_rule(pattern=["cp"], decision="allow", justification="Copy files for Tier 3 patches (Unix)")
+prefix_rule(pattern=["copy"], decision="allow", justification="Copy files (Windows CMD)")
+prefix_rule(pattern=["xcopy"], decision="allow", justification="Copy directories (Windows CMD)")
+prefix_rule(pattern=["New-Item"], decision="allow", justification="Create files/dirs (PowerShell)")
+prefix_rule(pattern=["touch"], decision="allow", justification="Create empty files (Unix)")
+
+# --- Git (read-only) ---
+prefix_rule(pattern=["git", "status"], decision="allow", justification="Check repo state")
+prefix_rule(pattern=["git", "log"], decision="allow", justification="Read commit history")
+prefix_rule(pattern=["git", "diff"], decision="allow", justification="Inspect changes")
+prefix_rule(pattern=["git", "show"], decision="allow", justification="Read specific commits")
+prefix_rule(pattern=["git", "branch"], decision="allow", justification="List branches")
+prefix_rule(pattern=["git", "remote"], decision="allow", justification="List remotes")

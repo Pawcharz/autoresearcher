@@ -1,0 +1,58 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(python)",
+      "Bash(py *)",
+
+      "Bash(ls *)",
+      "Bash(ls)",
+      "Bash(pwd)",
+      "Bash(tree *)",
+      "Bash(tree)",
+      "Bash(stat *)",
+
+      "Bash(cat *)",
+      "Bash(tail *)",
+      "Bash(head *)",
+      "Bash(wc *)",
+      "Bash(diff *)",
+      "Bash(echo *)",
+
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(sort *)",
+      "Bash(sort)",
+      "Bash(uniq *)",
+      "Bash(cut *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(xargs *)",
+      "Bash(jq *)",
+
+      "Bash(which *)",
+      "Bash(date)",
+      "Bash(date *)",
+      "Bash(env)",
+      "Bash(uname *)",
+
+      "Bash(pip list)",
+      "Bash(pip list *)",
+      "Bash(pip show *)",
+      "Bash(pip freeze)",
+
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(touch *)",
+
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)"
+    ]
+  }
+}
