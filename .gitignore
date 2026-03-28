@@ -1,6 +1,9 @@
 # Research artifacts — generated during runs, not tracked in git
 runs/
 
+# Raw papers — often large PDFs, not worth tracking in git
+papers/raw/
+
 # Research target — symlink or external path for real projects (not part of this repo)
 # Commented out here so the dummy example in research_target/ is tracked.
 # Uncomment when pointing at your own codebase:

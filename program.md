@@ -22,9 +22,12 @@ reference `experiments/`, `experiment_log.md`, or `findings.md` are inside `{RUN
 4. Create the run directory: `runs/YYYYMMDD_HHMMSS/` using the current date and time
    (e.g. `runs/20260328_143022/`). This is `{RUN_DIR}` for this session. All experiment
    output, logs, and findings go inside it. Previous runs in `runs/` are left untouched.
-5. Read `research_target/` — explore the codebase to understand what code exists before
+5. Read all files in `papers/overview/` (excluding `_template.md`) if any exist. These are
+   Tier 3 paper overviews — short enough to read in full. Keep them in mind when planning
+   experiments; they tell you what methods are available in the condensed paper library.
+6. Read `research_target/` — explore the codebase to understand what code exists before
    writing any experiments. Read file trees, key scripts, existing results if any.
-6. Begin the experiment loop for the first unfinished direction.
+7. Begin the experiment loop for the first unfinished direction.
 
 ---
 
@@ -37,6 +40,11 @@ Before writing any code, state:
 - What you are testing (specific hypothesis)
 - Why this is a productive next step given what's already been tried
 - What result would count as a positive finding vs. a null result
+
+If any paper overview (loaded at startup) looks relevant to this experiment, read the
+corresponding `papers/condensed/{paper_id}.md` before writing code. Use it to inform
+your method choice or implementation. Do not read condensed papers speculatively —
+only when a specific method from the overview is directly applicable to this experiment.
 
 ### Step 2 — Write experiment
 Create the experiment under `{RUN_DIR}/experiments/{direction_id}/exp_{NNN}/`.
