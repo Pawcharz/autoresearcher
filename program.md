@@ -22,9 +22,8 @@ reference `experiments/`, `experiment_log.md`, or `findings.md` are inside `{RUN
 4. Create the run directory: `runs/YYYYMMDD_HHMMSS/` using the current date and time
    (e.g. `runs/20260328_143022/`). This is `{RUN_DIR}` for this session. All experiment
    output, logs, and findings go inside it. Previous runs in `runs/` are left untouched.
-5. Read all files in `papers/overview/` (excluding `_template.md`) if any exist. These are
-   Tier 3 paper overviews — short enough to read in full. Keep them in mind when planning
-   experiments; they tell you what methods are available in the condensed paper library.
+5. Read `papers/index.md` if it exists. This is a one-liner-per-paper index — all you need
+   to know what methods are available. Do not read individual overviews at startup.
 6. Read `research_target/` — explore the codebase to understand what code exists before
    writing any experiments. Read file trees, key scripts, existing results if any.
 7. Begin the experiment loop for the first unfinished direction.
@@ -41,10 +40,12 @@ Before writing any code, state:
 - Why this is a productive next step given what's already been tried
 - What result would count as a positive finding vs. a null result
 
-If any paper overview (loaded at startup) looks relevant to this experiment, read the
-corresponding `papers/condensed/{paper_id}.md` before writing code. Use it to inform
-your method choice or implementation. Do not read condensed papers speculatively —
-only when a specific method from the overview is directly applicable to this experiment.
+If any entry in `papers/index.md` looks relevant to this experiment based on its
+`useful_for` keywords, read `papers/overview/{paper_id}.md` for that paper first.
+If the overview confirms the method is directly applicable, then read
+`papers/condensed/{paper_id}.md` before writing code.
+Do not read overviews or condensed papers speculatively — only when the index
+entry gives a concrete reason to.
 
 ### Step 2 — Write experiment
 Create the experiment under `{RUN_DIR}/experiments/{direction_id}/exp_{NNN}/`.
