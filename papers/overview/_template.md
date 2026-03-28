@@ -1,5 +1,5 @@
 ---
-id: paper_id_matching_filename        # used to find condensed/ counterpart
+id: paper_id_matching_filename
 title: "Full Paper Title"
 authors: "Last et al."
 venue: "NeurIPS 2024"
@@ -7,11 +7,11 @@ venue: "NeurIPS 2024"
 
 **Problem**: One sentence — what gap or question does this paper address?
 
-**Method**: 2–3 sentences — the core idea. Specific enough that you can judge whether it's
-relevant to an experiment you're designing, without reading the condensed version.
+**Method**: 2 sentences maximum — name what is specifically novel. Not "a transformer-based
+approach" but what it does differently or what new mechanism it introduces.
 
-**Key results**: 1–2 lines with numbers. What did they achieve, on what benchmark/dataset?
+**Key results**: 1 sentence with numbers.
 
-**Useful for**: What kinds of experiments or research questions would benefit from reading
-the condensed version of this paper? Be concrete (e.g. "ablation study design",
-"probing classifier setup", "neuron importance measurement").
+**Useful for**: comma-separated keywords only, no prose. These are matched against
+experiment needs at runtime — be specific and concrete.
+Examples: "neuron ablation, linear probe, activation patching" not "interpretability research".

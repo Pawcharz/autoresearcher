@@ -1,11 +1,12 @@
 # Autoresearcher
 
-A framework for autonomous overnight experiment execution on ML research codebases,
-driven by Claude Code.
+A framework for autonomous overnight experiment execution on ML research codebases.
+Works with Claude Code, Cursor, and Codex — no API credits required.
 
-No API credits required. No Python orchestrator. The entry point is a single `program.md`
-that instructs Claude to explore your codebase, run experiments, score findings, and
-keep going until all research directions are exhausted.
+The user opens their AI coding tool, says "Read program.md and begin", and leaves it
+running. The orchestrator spawns one worker subagent per research direction (in parallel
+where supported, sequentially otherwise), each running in its own fresh context window.
+Results are consolidated into a findings report at the end.
 
 ---
 
@@ -13,7 +14,7 @@ keep going until all research directions are exhausted.
 
 **1. Point it at your research codebase**
 
-Symlink or copy your codebase into `research_target/`:
+Symlink your codebase into `research_target/`:
 ```bash
 ln -s /path/to/your/codebase research_target
 ```
@@ -21,22 +22,31 @@ Or set `research_target_path` in `config/config.yaml` to an absolute path.
 
 **2. Define your research directions**
 
-Edit `config/directions.yaml`. Each direction is a focused research question Claude
-will design and run experiments for.
+Edit `config/directions.yaml`. Each direction is a focused research question.
+Workers run in parallel — one worker per direction.
 
 **3. Define your scoring rubric**
 
-Edit `config/scoring_rubric.md` to describe what a "good finding" looks like for
-your paper and target venue.
+Edit `config/scoring_rubric.md` to describe what a publishable finding looks like
+for your paper and target venue.
 
-**4. Open Claude Code and say:**
+**4. (Optional) Add papers**
+
+Drop PDFs into `papers/raw/`, then run a separate ingestion session:
+```
+Read papers/ingest.md and begin.
+```
+The ingestion session builds a searchable paper database workers can reference when
+designing experiments.
+
+**5. Open Claude Code (or Cursor, or Codex) and say:**
 ```
 Read program.md and begin.
 ```
 
-Leave it running. Claude will explore the codebase, write experiments, run them,
-score findings, and log everything to `experiment_log.md`. When done, it writes
-`findings.md`.
+Leave it running. Workers explore the codebase, write and run experiments, score
+findings, and log results. When all directions are done, the orchestrator writes
+`runs/{timestamp}/findings.md`.
 
 ---
 
@@ -44,37 +54,54 @@ score findings, and log everything to `experiment_log.md`. When done, it writes
 
 ```
 autoresearcher/
-├── program.md               ← Claude reads this and follows it
+├── program.md               ← entry point; read this to begin (orchestrator)
+├── worker.md                ← worker instructions; spawned per direction
 ├── config/
-│   ├── config.yaml          ← research target path and settings
-│   ├── directions.yaml      ← your research directions
+│   ├── config.yaml          ← research target path, timeout, thresholds
+│   ├── directions.yaml      ← research directions (one worker per direction)
 │   └── scoring_rubric.md    ← what "interesting" means for your paper
+├── papers/
+│   ├── ingest.md            ← ingestion entry point (orchestrator)
+│   ├── ingest_worker.md     ← per-paper worker; spawned by ingest.md
+│   ├── index.md             ← one-liner per paper; loaded by workers at startup
+│   ├── raw/                 ← original PDFs (gitignored)
+│   ├── overview/            ← short structured overview per paper (gitignored)
+│   └── condensed/           ← ~10-20% length distillation per paper (gitignored)
 ├── research_target/         ← symlink to your codebase (gitignored)
-├── experiments/             ← auto-created per direction (gitignored)
-│   └── {direction_id}/
-│       └── exp_001/
-│           ├── experiment.py
-│           ├── outputs/
-│           └── summary.md
-├── experiment_log.md        ← compact running log Claude maintains (gitignored)
-└── findings.md              ← consolidated findings written at the end (gitignored)
+└── runs/                    ← auto-created; one subdir per session (gitignored)
+    └── YYYYMMDD_HHMMSS/
+        ├── experiment_log_{direction_id}.md
+        ├── findings.md
+        └── experiments/
+            └── {direction_id}/
+                └── exp_001/
+                    ├── experiment.py
+                    ├── outputs/
+                    └── summary.md
 ```
 
 ---
 
 ## Design principles
 
-**No API credits.** Uses Claude Code's built-in tools — works with any Claude Code
-or Cursor subscription.
+**No API credits.** Uses the built-in tools of Claude Code, Cursor, or Codex — works
+with any subscription. No `anthropic.Anthropic()` calls, no separate billing.
 
-**Compact memory.** Claude maintains `experiment_log.md` (~100–200 tokens per entry)
-instead of relying on full message history. After 10 experiments the log is ~1,500
-tokens flat.
+**Parallel workers, isolated context.** Each research direction runs in its own subagent
+with a fresh context window. No quadratic context growth across directions.
+
+**Filesystem coordination.** Workers write to their own `experiments/{direction_id}/`
+subdirectory. No shared state, no write conflicts. The orchestrator reads results after
+workers finish.
+
+**Compact memory.** Each worker maintains a compact `experiment_log_{direction_id}.md`
+(~100–200 tokens per entry, rolling 10-entry window) instead of relying on full
+conversation history.
 
 **Mandatory skepticism.** Every experiment summary requires a counterargument section
-where Claude argues against its own findings before assigning a score.
+where the worker argues against its own findings before assigning a score.
 
-**Paper-agnostic core.** All paper-specific knowledge lives in `config/` only.
-To use on a different project, clone and reconfigure — don't modify `program.md`.
+**Paper-agnostic core.** All paper-specific knowledge lives in `config/` and `papers/`.
+Clone and reconfigure to use on a different research project.
 
 **1:1 mapping.** One repo instance = one research codebase = one config.
