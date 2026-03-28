@@ -1,6 +1,6 @@
 # autoresearcher
 
-experiment progression
+![experiment progression](assets/progression.png)
 
 A framework for autonomous experiment execution on ML research codebases. Define research directions, point it at your code, and let it run. Workers explore the codebase, write and execute experiments, self-score results against your rubric, and iterate until they find something significant. Output: a findings report with quantified results, counterarguments, and prioritized follow-ups.
 
@@ -10,7 +10,7 @@ Works with Claude Code, Cursor, and Codex — any subscription, zero extra cost.
 
 ## How it works
 
-architecture diagram
+![architecture diagram](assets/diagram.svg)
 
 You define research directions — specific, falsifiable questions about your codebase. autoresearcher spawns one worker agent per direction. Each worker explores the code, writes and runs experiments, self-scores results against a rubric you provide, and keeps iterating until a finding clears the significance threshold or the experiment budget runs out. Everything is coordinated through plain markdown files. No Python orchestrator, no API calls — the markdown files *are* the program.
 
@@ -18,7 +18,7 @@ You define research directions — specific, falsifiable questions about your co
 
 Drop PDFs into `papers/raw/`, run `Read papers/ingest.md and begin`, and each paper gets distilled into three tiers that workers reference during experiments — from a one-liner index loaded at startup, to a condensed full-text loaded when directly relevant.
 
-papers pipeline
+![papers pipeline](assets/papers_diagram.svg)
 
 ---
 
